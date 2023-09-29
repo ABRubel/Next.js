@@ -1,0 +1,23 @@
+version: "3.7"
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: nextjs-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: next-js
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: toor
+      MYSQL_USER: toor
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
