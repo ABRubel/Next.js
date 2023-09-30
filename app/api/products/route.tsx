@@ -1,11 +1,11 @@
+import prisma from "@/prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import schema from "./schema";
 
 export async function GET(request: NextRequest) {
-  return NextResponse.json([
-    { id: 1, name: "Rice", price: 50 },
-    { id: 2, name: "Dal", price: 40 },
-  ]);
+  const products = await prisma.product.findMany();
+
+  return NextResponse.json(products);
 }
 
 export async function POST(request: NextRequest) {
@@ -19,8 +19,23 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  return NextResponse.json(
-    { message: `${body.name} inserted succefully` },
-    { status: 201 }
-  );
+  const product = await prisma.product.findUnique({
+    where: { name: body.name },
+  });
+
+  if (product) {
+    return NextResponse.json(
+      { message: "Product name taken" },
+      { status: 400 }
+    );
+  }
+
+  const newProduct = await prisma.product.create({
+    data: {
+      name: body.name,
+      price: body.price,
+    },
+  });
+
+  return NextResponse.json(newProduct, { status: 201 });
 }
